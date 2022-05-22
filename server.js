@@ -3,6 +3,8 @@ const { Snake } = require("discord-gamecord")
 const { createCanvas, loadImage } = require('canvas')
 const moment = require('moment');
 const canvas = createCanvas(200, 200)
+const kelime = require('rastgelekelime'); //İlk kelime için EKA hocamın modülü
+const fetch = require('node-fetch');
 const akinator = require("discord.js-akinator");
 const ctx = canvas.getContext('2d')
 const client = new Discord.Client({
@@ -134,6 +136,49 @@ client.elevation = message => {
 };
 
 /////-------------| KOMUTLAR |-------------\\\\\\
+
+//--------kelime oyunu------------\\
+
+const prefic = "!!"
+
+client.on("message", async message => {
+  if (message.author.bot) return;  //Bot ise dur
+      if(message.channel.type === 'dm') return; //DM ise dur
+
+    if (message.content.startsWith(prefix + "kelime")) { //yeni oyun
+    const word = kelime() //EKAlojinin modülünden bir kelime.
+    message.channel.send("Oyun başladı\n\n" + word) //kelimeyi yazar
+    const ilkharf = word.split("")[word.split("").length - 1] //son harfi alır
+    db.set(`sonharf_${message.guild.id}`, ilkharf) //son harfi not alır.
+  }
+
+
+  if (message.content.startsWith(prefic)) { //eğer belirlenen prefixle ile başlarsa (her mesajı almasın diye)
+    if (!db.fetch(`sonharf_${message.guild.id}`)) return message.react("⛔")   //Eğer oyun başlamamışsa başlamaz.
+
+    var nkelime = message.content.replace(prefic, "").toLowerCase() //Mesajdaki kelimeyi çok gerekeceği için tanımladık. Tanımlarken
+
+    if (nkelime.split("")[0] === db.fetch(`sonharf_${message.guild.id}`)) { //aldığımız notla yazdığınız kelimenin son harfi uyuyorsa
+      const arama = await fetch("https://sozluk.gov.tr/gts?ara=" + encodeURI(nkelime)) //EncodeURI kelimeyi uygun hale getiriyor
+      const veri = await arama.json(); //tdk sitesinden veri alır.
+      if (veri.error) {
+        message.react("⛔")
+        message.reply("Kelime yok. Son harf şuydu, hatırlatayım : " + db.fetch(`sonharf_${message.guild.id}`))
+        return
+      } //eğer öyle bir kelime yoksa sitede durur. Ama oyun bitmez, yanlış yazmış olabilirsin.
+ 
+      message.react("🆗") //Doğru ise emoji atar
+      const conten = nkelime.split("")[nkelime.split("").length - 1] //son harfi tekrar aldı
+     db.set(`sonharf_${message.guild.id}`, conten) //son harfi tekrar not aldı
+     db.add(`kelimesayac_${message.guild.id}`, 1) //kelime sayacına bir tane ekledi
+    } else {
+      message.react("⛔")   //yanlışsa yazıyor
+      message.reply("Yanlış! Oyun bitti. Şu ana kadar yazılan doğru kelime : " +   db.fetch(`kelimesayac_${message.guild.id}`))  //Oyun bitince bildirir ve, doğru kelimeleri yazar. Yanlışlar da yazdırılabilir ama gereksiz :evilol:
+      db.delete(`sonharf_${message.guild.id}`) //Yukarıda oyun başlamamışsa koşulunu sağlamak için DB'den siliyoruz.
+    }
+  }
+ 
+});
 
 
 //-------|akinatör|-------------\\

@@ -43,7 +43,6 @@
     "mongoose": "^6.0.12",
     "node-pre-gyp": "^0.17.0",
     "node-superfetch": "^0.2.3",
-    "node-fetch": "^3.2.4",
     "npm": "^8.1.4",
     "opusscript": "^0.0.8",
     "orio.db": "^3.0.9",

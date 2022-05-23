@@ -139,67 +139,6 @@ client.elevation = message => {
 
 //--------kelime oyunu------------\\
 
-const prefic = "!!"
-
-client.on("message", async message => {
-  if (message.author.bot) return;  //Bot ise dur
-      if(message.channel.type === 'dm') return; //DM ise dur
-
-    if (message.content.startsWith(prefix + "kelime")) { //yeni oyun
-    const word = kelime() //EKAlojinin modülünden bir kelime.
-    message.channel.send("Oyun başladı\n\n" + word) //kelimeyi yazar
-    const ilkharf = word.split("")[word.split("").length - 1] //son harfi alır
-    db.set(`sonharf_${message.guild.id}`, ilkharf) //son harfi not alır.
-  }
-
-
-  if (message.content.startsWith(prefic)) { //eğer belirlenen prefixle ile başlarsa (her mesajı almasın diye)
-    if (!db.fetch(`sonharf_${message.guild.id}`)) return message.react("⛔")   //Eğer oyun başlamamışsa başlamaz.
-
-    var nkelime = message.content.replace(prefic, "").toLowerCase() //Mesajdaki kelimeyi çok gerekeceği için tanımladık. Tanımlarken
-
-    if (nkelime.split("")[0] === db.fetch(`sonharf_${message.guild.id}`)) { //aldığımız notla yazdığınız kelimenin son harfi uyuyorsa
-      const arama = await fetch("https://sozluk.gov.tr/gts?ara=" + encodeURI(nkelime)) //EncodeURI kelimeyi uygun hale getiriyor
-      const veri = await arama.json(); //tdk sitesinden veri alır.
-      if (veri.error) {
-        message.react("⛔")
-        message.reply("Kelime yok. Son harf şuydu, hatırlatayım : " + db.fetch(`sonharf_${message.guild.id}`))
-        return
-      } //eğer öyle bir kelime yoksa sitede durur. Ama oyun bitmez, yanlış yazmış olabilirsin.
- 
-      message.react("🆗") //Doğru ise emoji atar
-      const conten = nkelime.split("")[nkelime.split("").length - 1] //son harfi tekrar aldı
-     db.set(`sonharf_${message.guild.id}`, conten) //son harfi tekrar not aldı
-     db.add(`kelimesayac_${message.guild.id}`, 1) //kelime sayacına bir tane ekledi
-    } else {
-      message.react("⛔")   //yanlışsa yazıyor
-      message.reply("Yanlış! Oyun bitti. Şu ana kadar yazılan doğru kelime : " +   db.fetch(`kelimesayac_${message.guild.id}`))  //Oyun bitince bildirir ve, doğru kelimeleri yazar. Yanlışlar da yazdırılabilir ama gereksiz :evilol:
-      db.delete(`sonharf_${message.guild.id}`) //Yukarıda oyun başlamamışsa koşulunu sağlamak için DB'den siliyoruz.
-    }
-  }
- 
-});
-
-
-//-------|akinatör|-------------\\
-
-const language = "tr"; //The Language of the Game
-const childMode = false; //Whether to use Akinator's Child Mode
-const gameType = "character"; //The Type of Akinator Game to Play. ("animal", "character" or "object")
-const useButtons = true; //Whether to use Discord's Buttons
-const embedColor = "#1F1E33"; //The Color of the Message Embeds
-
-client.on("messageCreate", async message => {
-    if(message.content.startsWith(`${prefix}akinatör`)) {
-        akinator(message, {
-            language: language, //Defaults to "en"
-            childMode: childMode, //Defaults to "false"
-            gameType: gameType, //Defaults to "character"
-            useButtons: useButtons, //Defaults to "false"
-            embedColor: embedColor //Defaults to "RANDOM"
-        });
-    }
-});
 
 //-----------------| panel |----------\\
 

@@ -14,8 +14,7 @@ require('discord-buttons')(client);
 const ayarlar = require("./ayarlar.json");
 const { Client, Util, Collection } = require("discord.js");
 const util = require('minecraft-server-util');
-const { QuickDB } = require("quick.db");
-const db = QuickDB({ filePath: "./json.sqlite" });
+const db = require("quick.db");
 const fs = require("fs");//gweep creative
 const hedefimiz = require(`./mainjsons/hedef.json`);
 const { MessageEmbed } = require(`discord.js`);

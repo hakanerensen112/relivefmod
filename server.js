@@ -3,9 +3,6 @@ const { Snake } = require("discord-gamecord")
 const { createCanvas, loadImage } = require('canvas')
 const moment = require('moment');
 const canvas = createCanvas(200, 200)
-const kelime = require('rastgelekelime'); //İlk kelime için EKA hocamın modülü
-const fetch = require('node-superfetch');
-const akinator = require("discord.js-akinator");
 const ctx = canvas.getContext('2d')
 const client = new Discord.Client({
   disableMentions: 'everyone'

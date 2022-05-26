@@ -139,68 +139,7 @@ client.elevation = message => {
 
 //--------kelime oyunu------------\\
 
-client.on('message', async (message) => {
-    if (message.author.bot) return;
-    if (message.channel.id !== '978062606562635806') return; //KANAL İD BURAYA by yDarKDayS
-    if (message.content.startsWith('.')) return;
-    if (message.content.split(" ").length > 1) return message.channel.send('👌 **Cümle degil Kelime eheh**').then(msg => {
-        msg.delete({
-            timeout: 5000
-        })
-        message.delete()
-    })
-    let kelime = db.get(`son_${message.guild.id}`)
-    let kelimeler = db.get(`kelimeler_${message.guild.id}`)
 
-    let kişi = db.get(`klm_${message.guild.id}`)
-    if (kişi == message.author.id) return message.channel.send('🤔 **En son zaten sen yazmışsın**').then(msg => {
-        msg.delete({
-            timeout: 5000
-        })
-        message.delete()
-    })//Lütfen bu alt yapıyı izinsiz paylaşmayınız DETAYLI BILGI : https://discord.gg/tDpq2SAEF4
-
-    if (kelime == null) {
-        let random = String.fromCharCode(65 + Math.floor(Math.random() * 26))
-        let son = random.charAt(random.length - 1)
-        db.set(`son_${message.guild.id}`, son)
-        message.channel.send('💗 Kelime Oyunu **' + son + '** harfi ile başladı')
-    }
-
-    if (kelime.toLowerCase() !== message.content.charAt(0)) return message.channel.send('😕 En son yazılan Kelime **' + kelime + '** ile bitmiş').then(msg => {
-        msg.delete({
-            timeout: 5000
-        })
-        message.delete()
-    })
-
-
-
-
-
-    const api = await fetch(`https://sozluk.gov.tr/gts?ara=${encodeURI(message.content)}`)
-        .then(response => response.json());
-    if (api.error) return message.channel.send('😐 **Yazdığın Kelimeyi TDK da bulamadım**').then(msg => {
-        msg.delete({
-            timeout: 5000
-        })
-        message.delete()
-        db.subtract(`puan_${message.guild.id}_${message.author.id}`, 1)
-    })
-
-    if (message.content.charAt(message.content.length - 1) === 'ğ'.toLowerCase()) return message.channel.send('😕 Sonu **Ğ** ile bitmemeli !!!').then(msg => {
-        msg.delete({
-            timeout: 5000
-        })
-        message.delete()
-    })
-
-    db.push(`kelimeler_${message.guild.id}`, message.content)
-    db.set(`son_${message.guild.id}`, message.content.charAt(message.content.length - 1))
-    db.set(`klm_${message.guild.id}`, message.author.id)
-    db.add(`puan_${message.guild.id}_${message.author.id}`, 2)
-    message.react('🤍')
-})
 
 
 //-----------------| panel |----------\\
